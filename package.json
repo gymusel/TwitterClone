@@ -42,5 +42,17 @@
     "> 1%",
     "last 2 versions",
     "not dead"
+  ],
+  "git-graph.graph.style": "angular",
+  "git-graph.graph.colours": [
+    "#f39700",
+    "#009944",
+    "#d7c447",
+    "#bb641d",
+    "#00a7db",
+    "#9caeb7",
+    "#e60012",
+    "#00ada9",
+    "#9b7cb6"
   ]
 }
