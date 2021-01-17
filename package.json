@@ -9,11 +9,13 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-router": "^3.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "^4.5.10",
+    "@vue/cli-plugin-router": "^4.5.10",
     "@vue/cli-service": "~4.5.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
@@ -43,7 +45,6 @@
     "last 2 versions",
     "not dead"
   ],
-  "git-graph.graph.style": "angular",
   "git-graph.graph.colours": [
     "#f39700",
     "#009944",
@@ -54,5 +55,6 @@
     "#e60012",
     "#00ada9",
     "#9b7cb6"
-  ]
+  ],
+  "git-graph.graph.style": "angular"
 }
