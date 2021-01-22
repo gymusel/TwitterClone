@@ -1,21 +1,13 @@
 <template>
-  <div class="form__wrapper">
-    <textarea
-      class="form__textarea"
-      v-model="text"
-      ref="area"
-      :style="form__textarea"
-      placeholder="いまどうしてる？"
-    />
-    <div class="form__buttons">
-      <button v-on:click="postTweet" class="form__submit-button">
-        投稿
-      </button>
-    </div>
-    <div>
-      <p v-for="tweet in tweets" :key="tweet.id">
-        {{ tweet.text }}
-      </p>
+  <div class="form__wrapper" :rows="rows">
+    <div class="user__icon"></div>
+    <div class="form__box">
+      <textarea class="form__textarea" v-model="text" :rows="rows" placeholder="いまどうしてる？" />
+      <div class="form__buttons">
+        <div class="icon__box"><v-icon name="image" class="v-icon" /></div>
+        <button v-if="text === ''" class="form__submit-button false">ツイートする</button>
+        <button v-on:click="postTweet" v-else class="form__submit-button true">ツイートする</button>
+      </div>
     </div>
   </div>
 </template>
@@ -27,21 +19,11 @@ export default {
   data() {
     return {
       text: "",
-      height:"60px",
-      tweets: [],
-      unsubscribe: null,
     };
   },
   computed:{
-    form__textarea(){
-      return {
-        "height": this.height,
-      }
-    }
-  },
-  watch:{
-    text(){
-      this.resize();
+    rows:function(){
+      return this.text.split("\n").length ;
     },
   },
   methods:{
@@ -52,57 +34,71 @@ export default {
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
     },
-    resize(){
-      this.height = "auto";
-      this.$nextTick(()=>{
-        this.height = this.$refs.area.scrollHeight + 'px';
-      })
-    }
   },
-  created() {
-    const ref = firebase.firestore().collection("tweets")
-      .orderBy("updatedAt", "desc")
-      .limit(10);
-    // 参照に変更があったときに、お知らせを受け取る関数を onSnapshot() の中に書く
-    // 「購読する（subscribe）する」ともいう
-    this.unsubscribe = ref.onSnapshot(snapshot => {
-      let tweets = [];
-      snapshot.forEach(doc => {
-        tweets.push(doc.data());
-      });
-      this.tweets = tweets;
-    });
-  },
-  mounted(){
-    this.resize();
-  },
-  // ページを閉じたり切り替えたりなどで、コンポーネントが破棄される（destroy）ときに実行される関数
-  destroyed() {
-    // 変更のおしらせを受け取る必要がなくなるので、購読を中止する（unsubscribe）
-    this.unsubscribe();
-    this.unsubscribe = null;
-  }
 }
 </script>
 
 <style scoped>
 .form__wrapper {
-  padding: 1rem;
+  border-bottom: thin solid rgb(56, 68, 77);
+  min-height: 117px;
+  padding: 5px 15px;
+  display: flex;
+}
+.user__icon {
+  width: 49px;
+  height: 49px;
+  border-radius: 50%;
+  margin: 5px 10px 0 0;
+  background: black;
 }
 .form__textarea {
-  width: 100%;
-  /* height: calc(1.3rem * 3 + 0.5rem * 2); */
-  padding: 0.5rem;
-  line-height: 1.3rem;
-  border-radius: 5px;
+  background: rgb(21, 32, 43);
+  color: white;
+  font-size: 22px;
+  width: 505px;
   border: none;
   resize: none;
+  margin-top: 15px;
 }
 .form__textarea:focus {
   outline: none;
 }
 .form__buttons {
+  height: 49px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+}
+.icon__box {
+  width: 37px;
+  height: 37px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.icon__box:hover {
+  background: #1DA1F233;
+}
+.v-icon {
+  color: rgb(29, 161, 242);
+  width: 22.5px;
+  height: 22.5px;
+}
+.form__submit-button {
+  background: rgb(29, 161, 242);
+  color: white;
+  border-radius: 30px;
+  border: none;
+  width: 121px;
+  height: 39px;
+  font-weight: bold;
+}
+.true:hover {
+  opacity: 0.9;
+}
+.false {
+  opacity: 0.5;
 }
 </style>

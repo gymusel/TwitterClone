@@ -1,14 +1,11 @@
 <template>
-  <div class="home__wrapper">
+  <div class="preference__wrapper">
     <NavBar />
-    <div class="home">
+    <div class="preference">
       <div class="title">
-        <h3>ホーム</h3>
+        <h3>設定</h3>
       </div>
       <div class="scroll">
-        <SubmitForm />
-        <div class="gap" />
-        <Tweets />
       </div>
     </div>
     <FooBar />
@@ -17,24 +14,20 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue"
-import SubmitForm from "@/components/SubmitForm.vue"
-import Tweets from "@/components/Tweets.vue"
 import FooBar from "@/components/FooBar.vue"
 export default {
   components: {
     NavBar,
-    SubmitForm,
-    Tweets,
     FooBar,
   },
 }
 </script>
 
 <style scoped>
-.home__wrapper {
+.preference__wrapper {
   display: flex;
 }
-.home {
+.preference {
   overflow: auto;
   height: 100vh;
   width: 600px;
@@ -51,10 +44,5 @@ export default {
 }
 .scroll {
   margin-top: 53px;
-}
-.gap {
-  background: #192734;
-  border-bottom: thin solid rgb(56, 68, 77);
-  height: 10px;
 }
 </style>
