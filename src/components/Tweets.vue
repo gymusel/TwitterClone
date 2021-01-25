@@ -1,17 +1,17 @@
 <template>
   <div class="tweets__wrapper">
-    <div v-for="tweet in tweets" :key="tweet.id" class="tweet__box">
+    <div v-for="post in posts" :key="post.id" class="tweet__box">
       <div class="user__icon"></div>
       <div class="tweet__contents">
         <div class="tweet__head">
-          <p class="head__item user__name">UserName</p>
-          <p class="head__item user__id">@user_id</p>
+          <p class="head__item user__name">{{ post.displayName }}</p>
+          <p class="head__item user__id">{{ post.atname }}</p>
           <p class="head__item dot">・</p>
           <p class="head__item time">30</p>
           <p class="head__item v-icon"><v-icon name="ellipsis-h" /></p>
         </div>
         <div class="tweet__body">
-          {{ tweet.text }}
+          {{ post.text }}
         </div>
         <div class="tweet__foot">
           <div class="foot__item">
@@ -36,27 +36,27 @@
 </template>
 
 <script>
-import firebase from "firebase";
+import firebase from "firebase/app";
 
 export default {
   data() {
     return {
-      tweets: [],
+      posts: [],
       unsubscribe: null,
     };
   },
   created() {
-    const ref = firebase.firestore().collection("tweets")
+    const ref = firebase.firestore().collection("posts")
       .orderBy("updatedAt", "desc")
       .limit(10);
     // 参照に変更があったときに、お知らせを受け取る関数を onSnapshot() の中に書く
     // 「購読する（subscribe）する」ともいう
     this.unsubscribe = ref.onSnapshot(snapshot => {
-      let tweets = [];
+      let posts = [];
       snapshot.forEach(doc => {
-        tweets.push(doc.data());
+        posts.push(doc.data());
       });
-      this.tweets = tweets;
+      this.posts = posts;
     });
   },
   // ページを閉じたり切り替えたりなどで、コンポーネントが破棄される（destroy）ときに実行される関数

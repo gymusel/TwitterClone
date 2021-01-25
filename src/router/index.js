@@ -1,11 +1,11 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
 
-// import firebase from "firebase/app";
+import firebase from "firebase/app";
 import "firebase/auth";
 
-import HelloWorld from '../views/HelloWorld.vue'
-import Register from '../views/Register.vue'
+import Hello from '../views/Hello.vue'
+// import Register from '../views/Register.vue'
 import SignIn from '../views/SignIn.vue'
 
 import Home from "../views/Home.vue"
@@ -24,16 +24,16 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home,
-    // beforeEnter: (to, from, next) => {
-    //   firebase.auth().onAuthStateChanged(user => {
-    //     if (user) {
-    //       console.log(user)
-    //       next()
-    //     } else {
-    //       next("/signin");
-    //     }
-    //   });
-    // }
+    beforeEnter: (to, from, next) => {
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          console.log(user)
+          next()
+        } else {
+          next("/signin");
+        }
+      });
+    }
   },
   {
     path: "/hashtag",
@@ -71,15 +71,15 @@ const routes = [
     component: Preference,
   },
   {
-    path: "/helloworld",
-    name: "helloWorld",
-    component: HelloWorld
+    path: "/hello",
+    name: "hello",
+    component: Hello
   },
-  {
-    path: "/register",
-    name: "register",
-    component: Register
-  },
+  // {
+  //   path: "/register",
+  //   name: "register",
+  //   component: Register
+  // },
   {
     path: "/signin",
     name: "signIn",

@@ -29,19 +29,45 @@
         <p><v-icon name="cog" scale="1.5" class="v-icon"/>設定</p>
       </router-link>
     </div>
-    <button v-on:click="tweetModal" class="tweetModal-button">
+    <button id="tweetModal" class="tweetModal-button">
       <p>ツイートする</p>
     </button>
-    <button v-on:click="account" class="account-button">
+    <button @click="account" class="account-button">
       <div class="user-icon"/>
       <div class="account__info">
-        <p>Noel</p>
-        <p class="opacity">@21t_noel</p>
+        <p>{{ user.displayName }}</p>
+        <p class="opacity">{{ atname }}</p>
       </div>
       <v-icon name="ellipsis-h" scale="1.5"/>
     </button>
   </div>
 </template>
+
+<script>
+import firebase from "firebase/app";
+// import db from 'firebase/database';
+
+export default {
+  data() {
+    return {
+      user: {},
+      atname: ""
+    }
+  },
+  created() {
+    firebase.auth().onAuthStateChanged(user => {
+      this.user = user ? user : {}
+      this.atname = "@" + user.email.split("@")[0]
+    })
+  },
+  methods: {
+    account() {
+      firebase.auth().signOut();
+      this.$router.push('/signin');
+    }
+  }
+}
+</script>
 
 <style scoped>
 .nav__bar {

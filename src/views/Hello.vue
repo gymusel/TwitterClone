@@ -1,5 +1,8 @@
 <template>
   <div class="hello__wrapper">
+    <div v-show="registerModal" @click="closeRegisterModal" class="modal">
+      <div v-on:click.stop><RegisterModal /></div>
+    </div>
     <div class="body">
       <v-icon name="dove" scale="60" class="background__dove"/>
       <div class="left__box">
@@ -14,7 +17,7 @@
           <v-icon name="dove" scale="2.5" class="v-icon"/>
           <h1>「いま」起きていることを<br>見つけよう</h1>
           <p>Twitterをはじめよう</p>
-          <router-link to="/register" class="register link">アカウント作成</router-link>
+          <button @click="showRegisterModal" class="register link">アカウント作成</button>
           <router-link to="/signin" class="signin link">ログイン</router-link>
         </div>
       </div>
@@ -26,6 +29,25 @@
 </template>
 
 <script>
+import RegisterModal from "@/components/RegisterModal.vue"
+export default {
+  components: {
+    RegisterModal
+  },
+  data() {
+    return {
+      registerModal: false,
+    }
+  },
+  methods:{
+    showRegisterModal() {
+      this.registerModal = true;
+    },
+    closeRegisterModal() {
+      this.registerModal = false;
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -102,6 +124,9 @@
 .register:hover {
   opacity: 0.9;
 }
+.register:focus {
+  outline: none;
+}
 .signin {
   color: rgba(29,161,242,1.00);
 }
@@ -122,5 +147,15 @@
 }
 .footer p {
   margin: 0;
+}
+.modal {
+  background: rgba(0,0,0,0.4);
+  z-index: 3;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -13,11 +13,13 @@
 </template>
 
 <script>
-import firebase from "firebase";
+import firebase from "firebase/app";
 
 export default {
   data() {
     return {
+      user: {},
+      atname: "",
       text: "",
     };
   },
@@ -26,13 +28,23 @@ export default {
       return this.text.split("\n").length ;
     },
   },
+  created() {
+    firebase.auth().onAuthStateChanged(user => {
+      this.user = user ? user : {}
+      this.atname = "@" + user.email.split("@")[0]
+    })
+  },
   methods:{
     postTweet() {
-      firebase.firestore().collection("tweets").add({
+      firebase.firestore().collection("posts").add({
+        uid: this.user.uid,
+        displayName: this.user.displayName,
+        atname: this.atname,
         text: this.text,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
+      this.text = ""
     },
   },
 }
@@ -94,6 +106,9 @@ export default {
   width: 121px;
   height: 39px;
   font-weight: bold;
+}
+.form__submit-button:focus {
+  outline: none;
 }
 .true:hover {
   opacity: 0.9;
