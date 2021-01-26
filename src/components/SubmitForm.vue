@@ -36,13 +36,18 @@ export default {
   },
   methods:{
     postTweet() {
-      firebase.firestore().collection("posts").add({
+      // const userRef = firebase.firestore().collection('users').doc(this.user.uid)
+      const postRef = firebase.firestore().collection("posts").doc()
+      postRef.set({
+        pid: postRef.id,
         uid: this.user.uid,
+        // author: userRef.path,
         displayName: this.user.displayName,
         atname: this.atname,
         text: this.text,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        favCount: 0
       });
       this.text = ""
     },

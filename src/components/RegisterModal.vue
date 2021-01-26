@@ -64,6 +64,13 @@ export default {
     registerUser() {
       firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         .then((result) => {
+          firebase.firestore().collection("users").doc(result.user.uid).set({
+            name: this.name,
+            atname: "@" + this.email.split("@")[0],
+            email: this.email,
+            favPostCount: 0
+          })
+
           result.user.updateProfile({
             displayName: this.name
           }).then(() => {
