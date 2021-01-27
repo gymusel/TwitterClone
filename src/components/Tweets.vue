@@ -5,7 +5,7 @@
       <div class="tweet__contents">
         <div class="tweet__head">
           <p class="head__item user__name">{{ post.displayName }}</p>
-          <p class="head__item user__id">{{ post.atname }}</p>
+          <p class="head__item user__id">{{ post.atName }}</p>
           <p class="head__item dot">・</p>
           <p class="head__item time">{{ howOld(post.updatedAt) }}</p>
           <p class="head__item v-icon"><v-icon name="ellipsis-h" /></p>
@@ -43,7 +43,6 @@ import firebase from "firebase/app";
 export default {
   data() {
     return {
-      user: {},
       posts: [],
       myFavs: [],
       unsubscribe: null,
@@ -75,7 +74,7 @@ export default {
       } else if (diff < 3600000) {
         return minDiff < 0 ? `${minDiff + 60}分` : `${minDiff}分`;
       } else if (diff < 86400000) {
-        return hourDiff < 0 ? `${hourDiff + 60}時間` : `${hourDiff}時間`;
+        return hourDiff < 0 ? `${hourDiff + 24}時間` : `${hourDiff}時間`;
       } else if (diff < 2592000000) {
         return `${month}月${day}日`;
       } else {
@@ -110,7 +109,8 @@ export default {
   },
   created() {
     const currentUserId = firebase.auth().currentUser.uid;
-    console.log('You are ' + firebase.auth().currentUser.displayName)
+    console.log('You are ' + firebase.auth().currentUser.displayName);
+
     firebase.firestore().doc(`/users/${currentUserId}`).onSnapshot((doc) => {
       const userData = doc.data();
       if (userData.favorites) {
@@ -119,26 +119,24 @@ export default {
       }
     });
 
-    firebase.auth().onAuthStateChanged(user => {
-      this.user = user ? user : {}
-    });
-
-    const ref = firebase.firestore().collectionGroup("posts")
-      .orderBy("updatedAt", "desc")
-      .limit(10);
-    // 参照に変更があったときに、お知らせを受け取る関数を onSnapshot() の中に書く
-    // 「購読する（subscribe）する」ともいう
-    this.unsubscribe = ref.onSnapshot(snapshot => {
-      let posts = [];
-      snapshot.forEach(doc => {
-        posts.push(doc.data());
+    const postRef = firebase.firestore().collectionGroup("posts").orderBy("updatedAt", "desc").limit(10);
+    this.unsubscribe = postRef.onSnapshot(snapshot => {
+      let fakePosts = [];
+      snapshot.forEach(postDoc => {
+        firebase.firestore().collection('users').doc(postDoc.data().uid).get().then(function(userDoc) {
+          let fakePostDoc = {};
+          fakePostDoc = postDoc.data()
+          fakePostDoc["atName"] = userDoc.data().atName;
+          fakePostDoc["displayName"] = userDoc.data().displayName;
+          fakePosts.push(fakePostDoc);
+        }).catch(function(error) {
+          console.log(error);
+        });
       });
-      this.posts = posts;
+      this.posts = fakePosts;
     });
   },
-  // ページを閉じたり切り替えたりなどで、コンポーネントが破棄される（destroy）ときに実行される関数
   destroyed() {
-    // 変更のおしらせを受け取る必要がなくなるので、購読を中止する（unsubscribe）
     this.unsubscribe();
     this.unsubscribe = null;
   }
@@ -150,6 +148,9 @@ export default {
   border-bottom: thin solid rgb(56, 68, 77);
   padding: 10px 15px;
   display: flex;
+}
+.tweet__box:hover {
+  background: rgba(255, 255, 255, 0.03)
 }
 .user__icon {
   width: 50px;

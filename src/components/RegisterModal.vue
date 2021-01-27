@@ -7,8 +7,8 @@
       <h2 class="title">アカウントを作成</h2>
       <div>
         <div class="field">
-          <label for="name" v-bind:class="{ move: nameOnMove }">名前</label>
-          <input type="name" v-model="name" v-on:focus="typeName">
+          <label for="displayName" v-bind:class="{ move: displayNameOnMove }">名前</label>
+          <input type="displayName" v-model="displayName" v-on:focus="typeDisplayName">
         </div>
         <div class="field">
           <label for="email" v-bind:class="{ move: emailOnMove }">メール</label>
@@ -42,18 +42,18 @@ import "firebase/auth";
 export default {
   data() {
     return {
-      nameOnMove: false,
+      displayNameOnMove: false,
       emailOnMove: false,
       passwordOnMove: false,
-      name: "",
+      displayName: "",
       email: "",
       password: "",
       error: "",
     };
   },
   methods: {
-    typeName:function(){
-        this.nameOnMove = true;
+    typeDisplayName:function(){
+      this.displayNameOnMove = true;
     },
     typeEmail:function(){
       this.emailOnMove = true;
@@ -64,15 +64,17 @@ export default {
     registerUser() {
       firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         .then((result) => {
-          firebase.firestore().collection("users").doc(result.user.uid).set({
-            name: this.name,
-            atname: "@" + this.email.split("@")[0],
-            email: this.email,
-            favPostCount: 0
+          const userRef = firebase.firestore().collection("users").doc(result.user.uid)
+          
+          userRef.set({
+            uid: userRef.id,
+            displayName: this.displayName,
+            atName: "@" + this.email.split("@")[0],
+            email: this.email
           })
 
           result.user.updateProfile({
-            displayName: this.name
+            displayName: this.displayName
           }).then(() => {
             alert('アカウントの新規作成が完了しました！')
             this.sendEmail(this.email)
