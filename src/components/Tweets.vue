@@ -1,11 +1,11 @@
 <template>
   <div class="tweets__wrapper">
-    <div v-for="post in posts" :key="post.id" class="tweet__box">
-      <div class="user__icon"></div>
+    <router-link :to="{ name: 'Post', params: { pid: post.pid }}" v-for="post in posts" :key="post.id" class="tweet__box">
+      <router-link :to="{ name: 'Profile', params: { uid: post.uid }}" class="user__icon" />
       <div class="tweet__contents">
         <div class="tweet__head">
-          <p class="head__item user__name">{{ post.displayName }}</p>
-          <p class="head__item user__id">{{ post.atName }}</p>
+          <router-link :to="{ name: 'Profile', params: { uid: post.uid }}" class="head__item user__name">{{ post.displayName }}</router-link>
+          <router-link :to="{ name: 'Profile', params: { uid: post.uid }}" class="head__item user__id">{{ post.atName }}</router-link>
           <p class="head__item dot">・</p>
           <p class="head__item time">{{ howOld(post.updatedAt) }}</p>
           <p class="head__item v-icon"><v-icon name="ellipsis-h" /></p>
@@ -15,24 +15,24 @@
         </div>
         <div class="tweet__foot">
           <div class="foot__item">
-            <v-icon name="comment" class="v-icon" />
-            <p class="digits">100</p>
+            <v-icon name="comment" class="v-icon cmt-btn" />
+            <!-- <p class="digits">100</p> -->
           </div>
           <div class="foot__item">
-            <v-icon name="retweet" class="v-icon" />
-            <p class="digits">1000</p>
+            <v-icon name="retweet" class="v-icon ret-btn" />
+            <!-- <p class="digits">1000</p> -->
           </div>
           <div class="foot__item">
-            <v-icon name="heart" v-if="isFavorite(post)" @click="removeFromFavorite(post)" class="v-icon" style="color:#e0245E;" />
-            <v-icon name="heart" v-else @click="addToFavorite(post)" class="v-icon" />
-            <p class="digits">{{ post.favCount }}</p>
+            <v-icon name="heart" v-if="isFavorite(post)" @click.prevent="removeFromFavorite(post)" class="v-icon fav-btn" style="color:#e0245E;" />
+            <v-icon name="heart" v-else @click.prevent="addToFavorite(post)" class="v-icon fav-btn" />
+            <!-- <p class="digits">{{ post.favNum }}</p> -->
           </div>
           <div class="foot__item">
-            <v-icon name="share-square" class="v-icon" />
+            <v-icon name="share-square" class="v-icon cmt-btn" />
           </div>
         </div>
       </div>
-    </div>
+    </router-link>
   </div>
 </template>
 
@@ -45,6 +45,7 @@ export default {
     return {
       posts: [],
       myFavs: [],
+      // myFollows: [],
       unsubscribe: null,
     };
   },
@@ -87,39 +88,52 @@ export default {
     addToFavorite(post) {
       const currentUserId = firebase.auth().currentUser.uid;
       const userDoc = firebase.firestore().collection('users').doc(currentUserId);
-      console.log('Adding' + post.pid + ' to your favorites')
+      console.log('Adding ' + post.pid + ' to your favorites')
       userDoc.update({
         favorites: firebase.firestore.FieldValue.arrayUnion(post.pid)
       });
-      firebase.firestore().collection('posts').doc(post.pid).update({
-        favCount: post.favCount + 1
-      });
+      // firebase.firestore().collection('posts').doc(post.pid).update({
+      //   favCount: post.favCount + 1
+      // });
     },
     removeFromFavorite(post) {
       const currentUserId = firebase.auth().currentUser.uid;
       const userDoc = firebase.firestore().collection('users').doc(currentUserId);
-      console.log('Removing' + post.pid + ' from your favorites')
+      console.log('Removing ' + post.pid + ' from your favorites')
       userDoc.update({
         favorites: firebase.firestore.FieldValue.arrayRemove(post.pid)
       });
-      firebase.firestore().collection('posts').doc(post.pid).update({
-        favCount: post.favCount - 1
+      // firebase.firestore().collection('posts').doc(post.pid).update({
+      //   favCount: post.favCount - 1
+      // });
+    },
+    fetchCurrentUserData() {
+      return firebase.auth().currentUser.uid;
+    },
+    fetchMyFavorites(uid) {
+      firebase.firestore().collection("users").doc(uid).onSnapshot((doc) => {
+        const userData = doc.data();
+        if (userData.favorites) {
+          this.myFavs = userData.favorites;
+        }
       });
     },
+    // fetchMyFollows(uid) {
+    //   firebase.firestore().collection("users").doc(uid).onSnapshot((doc) => {
+    //     const userData = doc.data();
+    //     if (userData.follows) {
+    //       this.myFollows = userData.follows;
+    //     }
+    //   });
+    // },
   },
   created() {
-    const currentUserId = firebase.auth().currentUser.uid;
-    console.log('You are ' + firebase.auth().currentUser.displayName);
+    // this.fetchMyFollows(this.fetchCurrentUserData());
+    this.fetchMyFavorites(this.fetchCurrentUserData());
 
-    firebase.firestore().doc(`/users/${currentUserId}`).onSnapshot((doc) => {
-      const userData = doc.data();
-      if (userData.favorites) {
-        this.myFavs = userData.favorites;
-        console.log('Your favorites are ' + this.myFavs);
-      }
-    });
-
-    const postRef = firebase.firestore().collectionGroup("posts").orderBy("updatedAt", "desc").limit(10);
+    const postRef = firebase.firestore().collection("posts")
+      // .where("uid","array-contains-any",this.myFollows)
+      .orderBy("updatedAt", "desc").limit(10);
     this.unsubscribe = postRef.onSnapshot(snapshot => {
       let fakePosts = [];
       snapshot.forEach(postDoc => {
@@ -128,6 +142,9 @@ export default {
           fakePostDoc = postDoc.data()
           fakePostDoc["atName"] = userDoc.data().atName;
           fakePostDoc["displayName"] = userDoc.data().displayName;
+          // firebase.firestore().collection('users').where('favorites','array-contains',postDoc.data().pid).get().then(snap => {
+          //   fakePostDoc["favNum"] = snap.size;
+          // });
           fakePosts.push(fakePostDoc);
         }).catch(function(error) {
           console.log(error);
@@ -148,6 +165,8 @@ export default {
   border-bottom: thin solid rgb(56, 68, 77);
   padding: 10px 15px;
   display: flex;
+  text-decoration: none;
+  color: white;
 }
 .tweet__box:hover {
   background: rgba(255, 255, 255, 0.03)
@@ -174,12 +193,17 @@ export default {
   color: white;
   font-weight: bold;
   padding-right: 5px;
+  text-decoration: none;
+}
+.user__name:hover {
+  text-decoration: underline;
+}
+.user__id {
+  color: #8899A6;
+  text-decoration: none;
 }
 .v-icon {
   margin-left: auto;
-}
-.tweet__body {
-
 }
 .tweet__foot {
   color: #8899A6;
@@ -192,14 +216,24 @@ export default {
 .foot__item {
   display: flex;
   align-items: center;
-  /* width: 25em; */
 }
 .foot__item p {
   margin: 0;
 }
 .tweet__foot .v-icon {
-  width: 18.75px;
-  height: 18.75px;
+  width: 32px;
+  height: 32px;
   margin-right: 10px;
+  padding: 8px;
+  border-radius: 50%;
+}
+.cmt-btn:hover {
+  background: #1DA1F233;
+}
+.ret-btn:hover {
+  background: rgba(45, 183, 112, 0.2);
+}
+.fav-btn:hover {
+  background: rgba(224, 36, 94, 0.2);
 }
 </style>
