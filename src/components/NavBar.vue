@@ -16,12 +16,12 @@
       <router-link to="/message" class="nav__link">
         <p><v-icon name="envelope" scale="1.5" class="v-icon"/>メッセージ</p>
       </router-link>
-      <router-link to="/bookmark" class="nav__link">
+      <!-- <router-link to="/bookmark" class="nav__link">
         <p><v-icon name="bookmark" scale="1.5" class="v-icon"/>ブックマーク</p>
       </router-link>
       <router-link to="/list" class="nav__link">
         <p><v-icon name="list-alt" scale="1.5" class="v-icon"/>リスト</p>
-      </router-link>
+      </router-link> -->
       <router-link :to="{ name: 'Profile', params: { uid: user.uid }}" class="nav__link">
         <p><v-icon name="user" scale="1.5" class="v-icon"/>プロフィール</p>
       </router-link>
@@ -63,7 +63,7 @@ export default {
   methods: {
     account() {
       firebase.auth().signOut();
-      this.$router.push('/signin');
+      this.$router.push('/hello');
     }
   }
 }

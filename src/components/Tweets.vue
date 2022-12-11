@@ -57,6 +57,7 @@ export default {
       const nowSec = (`${now.getSeconds()}`).slice(-2);
 
       const time = timestamp.toDate();
+      console.log(timestamp, time)
       const year = time.getFullYear();
       const month = (`${time.getMonth() + 1}`).slice(-2);
       const day = (`${time.getDate()}`).slice(-2);

@@ -31,7 +31,7 @@ const routes = [
           console.log(user)
           next()
         } else {
-          next("/signin");
+          next("/hello");
         }
       });
     }
