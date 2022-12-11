@@ -4,7 +4,7 @@
       <v-icon name="dove" scale="1.5" />
     </div>
     <form @submit.prevent="registerUser">
-      <h2 class="title">アカウントを作成</h2>
+      <h2 class="title">EditProfile</h2>
       <div>
         <div class="field">
           <label for="displayName" v-bind:class="{ move: displayNameOnMove }">名前</label>
@@ -109,7 +109,7 @@ export default {
 <style lang="scss" scoped>
 .register__wrapper {
   background: rgb(21, 32, 43);
-  height: 580px;
+  height: 650px;
   width: 600px;
   border-radius: 15px;
   z-index: 4;

@@ -9,6 +9,7 @@ import Hello from '../views/Hello.vue'
 import SignIn from '../views/SignIn.vue'
 
 import Home from "../views/Home.vue"
+import Post from "../views/Post.vue"
 import Hashtag from "../views/Hashtag.vue"
 import Notification from "../views/Notification.vue"
 import Message from "../views/Message.vue"
@@ -30,10 +31,16 @@ const routes = [
           console.log(user)
           next()
         } else {
-          next("/signin");
+          next("/hello");
         }
       });
     }
+  },
+  {
+    path: "/post/:pid",
+    name: "Post",
+    component: Post,
+    props: true,
   },
   {
     path: "/hashtag",
@@ -61,9 +68,10 @@ const routes = [
     component: List,
   },
   {
-    path: "/profile",
+    path: "/profile/:uid",
     name: "Profile",
     component: Profile,
+    props: true,
   },
   {
     path: "/preference",
@@ -91,6 +99,14 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+
+  scrollBehavior (to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
+  }
 })
 
 export default router

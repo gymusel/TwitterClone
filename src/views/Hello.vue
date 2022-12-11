@@ -30,6 +30,7 @@
 
 <script>
 import RegisterModal from "@/components/RegisterModal.vue"
+
 export default {
   components: {
     RegisterModal

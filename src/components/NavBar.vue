@@ -1,6 +1,6 @@
 <template>
   <div class="nav__bar">
-    <router-link to="/" class="nav__logo nav__link">
+    <router-link to="/" class="nav__logo nav__link" exact-active-class="">
       <v-icon name="dove" scale="1.5" class="v-icon"/>
     </router-link>
     <div class="nav__items">
@@ -16,13 +16,13 @@
       <router-link to="/message" class="nav__link">
         <p><v-icon name="envelope" scale="1.5" class="v-icon"/>メッセージ</p>
       </router-link>
-      <router-link to="/bookmark" class="nav__link">
+      <!-- <router-link to="/bookmark" class="nav__link">
         <p><v-icon name="bookmark" scale="1.5" class="v-icon"/>ブックマーク</p>
       </router-link>
       <router-link to="/list" class="nav__link">
         <p><v-icon name="list-alt" scale="1.5" class="v-icon"/>リスト</p>
-      </router-link>
-      <router-link to="/profile" class="nav__link">
+      </router-link> -->
+      <router-link :to="{ name: 'Profile', params: { uid: user.uid }}" class="nav__link">
         <p><v-icon name="user" scale="1.5" class="v-icon"/>プロフィール</p>
       </router-link>
       <router-link to="/preference" class="nav__link">
@@ -36,7 +36,7 @@
       <div class="user-icon"/>
       <div class="account__info">
         <p>{{ user.displayName }}</p>
-        <p class="opacity">{{ atname }}</p>
+        <p class="opacity">{{ atName }}</p>
       </div>
       <v-icon name="ellipsis-h" scale="1.5"/>
     </button>
@@ -51,19 +51,19 @@ export default {
   data() {
     return {
       user: {},
-      atname: ""
+      atName: ""
     }
   },
   created() {
     firebase.auth().onAuthStateChanged(user => {
       this.user = user ? user : {}
-      this.atname = "@" + user.email.split("@")[0]
+      this.atName = "@" + user.email.split("@")[0]
     })
   },
   methods: {
     account() {
       firebase.auth().signOut();
-      this.$router.push('/signin');
+      this.$router.push('/hello');
     }
   }
 }
@@ -90,10 +90,11 @@ export default {
 }
 
 .nav__link {
-  color: white; 
-  text-decoration: none; 
-  /* flex-basis: auto; */
-  /* flex-shrink: 0; */
+  color: white;
+  text-decoration: none;
+}
+.router-link-exact-active {
+  color:rgb(29, 161, 242);
 }
 .nav__link:hover {
   color: rgb(29, 161, 242);

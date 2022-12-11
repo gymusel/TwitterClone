@@ -48,6 +48,7 @@ export default {
   display: flex;
   align-items: center;
   padding-left: 20px;
+  z-index: 10;
 }
 .scroll {
   margin-top: 53px;
